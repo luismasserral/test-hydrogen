@@ -1,7 +1,4 @@
-import {
-  SCENARIO_OMITTED,
-  getPersonalizedRecommendations
-} from '@crossingminds/beam-react'
+import {getPersonalizedRecommendations} from '@crossingminds/beam-react'
 import {useFetcher} from '@remix-run/react'
 import type {Cart} from '@shopify/hydrogen/storefront-api-types'
 import cookies from 'js-cookie'

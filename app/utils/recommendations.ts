@@ -9,9 +9,12 @@ export enum RECOMMENDATION_SCENARIOS {
   CART_FREQUENTLY_PURCHASED_TOGETHER = 'cart_frequently_purchased_together'
 }
 
-export const removeDuplicatedIds = (
+export const removeDuplicatedIdsAndGetFirstNth = (
   originIds: string[],
-  comparedToIds: string[]
+  comparedToIds: string[],
+  quantity: number
 ) => {
-  return originIds.filter(originId => !comparedToIds.includes(originId))
+  return originIds
+    .filter(originId => !comparedToIds.includes(originId))
+    .slice(0, quantity)
 }

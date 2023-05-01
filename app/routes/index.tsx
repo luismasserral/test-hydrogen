@@ -15,7 +15,10 @@ import {Recommendations} from '~/components/Recommendations'
 import {COLLECTIONS_QUERY} from '~/queries/collection'
 import {PRODUCTS_BY_VARIANT_QUERY} from '~/queries/product'
 import {commitSession, getSessionAndSessionId} from '~/sessions'
-import {RECOMMENDATION_SCENARIOS} from '~/utils/recommendations'
+import {
+  RECOMMENDATION_SCENARIOS,
+  removeDuplicatedIdsAndGetFirstNth
+} from '~/utils/recommendations'
 
 import HeroImage1 from '../../public/hero_banner_1.jpg'
 import HeroImage2 from '../../public/hero_banner_2.jpg'
@@ -75,16 +78,18 @@ export const loader = async ({context, request}: LoaderArgs) => {
       ...BEAM_REACT_OPTIONS,
       sessionId,
       sessionScenario: RECOMMENDATION_SCENARIOS.HOME_NEW_RELEASES_FOR_YOU,
-      maxResults: 3
+      maxResults: 11
     })
 
   const {nodes: productVariantsForNewReleases} = await context.storefront.query<
     Promise<any>
   >(PRODUCTS_BY_VARIANT_QUERY, {
     variables: {
-      ids: variantIdsForNewReleases.map(
-        variantId => `gid://shopify/ProductVariant/${variantId}`
-      )
+      ids: removeDuplicatedIdsAndGetFirstNth(
+        variantIdsForNewReleases,
+        variantIdsForRecommendations,
+        3
+      ).map(variantId => `gid://shopify/ProductVariant/${variantId}`)
     }
   })
 
@@ -93,15 +98,17 @@ export const loader = async ({context, request}: LoaderArgs) => {
       ...BEAM_REACT_OPTIONS,
       sessionId,
       sessionScenario: RECOMMENDATION_SCENARIOS.HOME_OUR_FAVORITES,
-      maxResults: 6
+      maxResults: 17
     })
 
   const {nodes: productVariantsForOurFavorites} =
     await context.storefront.query<Promise<any>>(PRODUCTS_BY_VARIANT_QUERY, {
       variables: {
-        ids: variantIdsForOurFavorites.map(
-          variantId => `gid://shopify/ProductVariant/${variantId}`
-        )
+        ids: removeDuplicatedIdsAndGetFirstNth(
+          variantIdsForOurFavorites,
+          [...variantIdsForNewReleases, ...variantIdsForNewReleases],
+          6
+        ).map(variantId => `gid://shopify/ProductVariant/${variantId}`)
       }
     })
 

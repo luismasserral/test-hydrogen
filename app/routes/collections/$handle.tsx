@@ -1,7 +1,4 @@
-import {
-  SCENARIO_OMITTED,
-  getPersonalizedRecommendations
-} from '@crossingminds/beam-react'
+import {getPersonalizedRecommendations} from '@crossingminds/beam-react'
 import {useLoaderData} from '@remix-run/react'
 import type {LoaderArgs} from '@shopify/remix-oxygen'
 import {json} from '@shopify/remix-oxygen'

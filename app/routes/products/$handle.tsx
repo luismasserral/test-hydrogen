@@ -1,5 +1,4 @@
 import {
-  SCENARIO_OMITTED,
   getItemBasedRecommendations,
   getPersonalizedRecommendations
 } from '@crossingminds/beam-react'
@@ -17,7 +16,7 @@ import {
 import {commitSession, getSessionAndSessionId} from '~/sessions'
 import {
   RECOMMENDATION_SCENARIOS,
-  removeDuplicatedIds
+  removeDuplicatedIdsAndGetFirstNth
 } from '~/utils/recommendations'
 import {
   SHOPIFY_ENTITY_TYPES,
@@ -89,12 +88,11 @@ export const loader = async ({context, params, request}: LoaderArgs) => {
   const {nodes: productVariantsForRecommendations} =
     await context.storefront.query<Promise<any>>(PRODUCTS_BY_VARIANT_QUERY, {
       variables: {
-        ids: removeDuplicatedIds(
+        ids: removeDuplicatedIdsAndGetFirstNth(
           variantIdsForRecommendations,
-          variantIdsForPurchasedOrViewed
-        )
-          .slice(0, 8)
-          .map(variantId => `gid://shopify/ProductVariant/${variantId}`)
+          variantIdsForPurchasedOrViewed,
+          8
+        ).map(variantId => `gid://shopify/ProductVariant/${variantId}`)
       }
     })
 
