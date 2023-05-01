@@ -147,7 +147,7 @@ export default function Index() {
       <Collections collections={collectionsForCollections} />
       <Recommendations
         productVariants={productVariantsForRecommendations}
-        title="Recommendations for you"
+        title="Picked just for you"
       />
       <NewReleases productVariants={productVariantsForNewReleases} />
       <OurFavorites productVariants={productVariantsForOurFavorites} />

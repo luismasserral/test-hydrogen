@@ -130,16 +130,16 @@ export default function ProductHandle() {
   return (
     <>
       <ProductDetail productVariant={productVariant} />
-      <Recommendations
-        productVariants={productVariantsForPurchasedOrViewed}
-        title="Customers also purchased or viewed"
-      />
       {productVariantsForRecommendations?.length ? (
         <Recommendations
           productVariants={productVariantsForRecommendations}
-          title="Recommendations for you"
+          title="Picked just for you"
         />
       ) : undefined}
+      <Recommendations
+        productVariants={productVariantsForPurchasedOrViewed}
+        title="You might also like"
+      />
     </>
   )
 }
