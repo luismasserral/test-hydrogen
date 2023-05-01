@@ -35,7 +35,7 @@ export const CartRecommendations: FunctionComponent<
     }
   }, [cart])
 
-  return (
+  return cart?.lines?.edges.length ? (
     <div className={cartRecommendationsStyle}>
       <h2 className={cartRecommendationsTitleStyle}>{title}</h2>
       {cartRecommendationsLoading ? (
@@ -64,5 +64,5 @@ export const CartRecommendations: FunctionComponent<
         </>
       )}
     </div>
-  )
+  ) : undefined
 }

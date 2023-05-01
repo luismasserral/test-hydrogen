@@ -19,11 +19,21 @@ export function useCartRecommendations() {
 
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher.data) {
-      setCartRecommendations(fetcher.data)
+      setCartRecommendations(removeRepeatedCartRecommendations(fetcher.data))
       setCartRecommendationsLoading(false)
       setCartRecommendationsError(false)
     }
   }, [fetcher])
+
+  const removeRepeatedCartRecommendations = (recommendations: any[]) => {
+    const cartIds = previousCart?.lines.edges.map(
+      cartLineEdge => cartLineEdge.node.merchandise.id
+    )
+
+    return recommendations
+      .filter(recommendation => !cartIds?.includes(recommendation.id))
+      .slice(0, 8)
+  }
 
   const cartHasChanged = (newCart: Cart) => {
     return (
@@ -48,23 +58,27 @@ export function useCartRecommendations() {
           }
         })
 
-        const {itemIds} = await getPersonalizedRecommendations({
-          ...BEAM_REACT_OPTIONS,
-          sessionId,
-          contextItems,
-          sessionWithContextScenario:
-            RECOMMENDATION_SCENARIOS.CART_FREQUENTLY_PURCHASED_TOGETHER,
-          maxResults: 8
-        })
+        if (contextItems?.length) {
+          const {itemIds} = await getPersonalizedRecommendations({
+            ...BEAM_REACT_OPTIONS,
+            sessionId,
+            contextItems,
+            sessionWithContextScenario:
+              RECOMMENDATION_SCENARIOS.CART_FREQUENTLY_PURCHASED_TOGETHER,
+            maxResults: 8 + contextItems.length
+          })
 
-        fetcher.submit(
-          {itemIds: JSON.stringify(itemIds)},
-          {method: 'post', action: '/cartRecommendations'}
-        )
+          fetcher.submit(
+            {itemIds: JSON.stringify(itemIds)},
+            {method: 'post', action: '/cartRecommendations'}
+          )
+        } else {
+          setCartRecommendations([])
+          setCartRecommendationsLoading(false)
+        }
       } catch (error) {
         console.error(error)
         setCartRecommendationsError(true)
-        setCartRecommendationsLoading(false)
       }
     }
   }
