@@ -76,7 +76,6 @@ export const CartDrawerLine: FunctionComponent<HeaderProps> = ({
       <div className={CartDrawerLineInfoWrapperStyle}>
         <div className={CartDrawerLineInfoStyle}>
           <p>{cartLineEdge.node.merchandise.product.title}</p>
-          <p>${cartLineEdge.node.merchandise.price.amount}</p>
         </div>
         <div className={CartDrawerLineActionsWrapperStyle}>
           <p>Quantity: {cartLineEdge.node.quantity}</p>

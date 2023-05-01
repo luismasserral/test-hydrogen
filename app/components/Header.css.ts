@@ -9,9 +9,10 @@ export const headerStyle = style({
   left: '50%',
   marginLeft: '-50vw',
   marginRight: '-50vw',
-  position: 'relative',
+  position: 'fixed',
   right: '50%',
-  width: '100vw'
+  width: '100vw',
+  zIndex: 10
 })
 
 export const headerInnerStyle = style({

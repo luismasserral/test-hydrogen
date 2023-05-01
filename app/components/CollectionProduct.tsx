@@ -52,9 +52,6 @@ export const CollectionProduct: FunctionComponent<CollectionProductProps> = ({
       <p className={collectionProductNameStyle}>
         {productVariant.product.title}
       </p>
-      <p className={collectionProductPriceStyle}>
-        ${productVariant.price.amount}
-      </p>
     </div>
   )
 }

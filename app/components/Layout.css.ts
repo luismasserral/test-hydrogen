@@ -22,3 +22,7 @@ export const layoutContentWrapperStyle = style({
 export const layoutFooterWrapperStyle = style({
   flexShrink: 0
 })
+
+export const layoutMainStyle = style({
+  marginTop: 64
+})

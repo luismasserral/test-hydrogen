@@ -5,7 +5,7 @@ import {vars} from '~/styles/theme.css'
 export const heroBannerStyle = style({
   alignItems: 'center',
   backgroundColor: vars.colors.lightGrey04,
-  backgroundPosition: 'center',
+  backgroundPosition: 'top',
   backgroundSize: 'cover',
   display: 'flex',
   height: 448,

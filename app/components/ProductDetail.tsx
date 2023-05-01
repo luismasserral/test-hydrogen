@@ -67,9 +67,6 @@ export const ProductDetail: FunctionComponent<ButtonProps> = ({
         <h1 className={productDetailTitleStyle}>
           {productVariant.product.title}
         </h1>
-        <p className={productDetailPriceStyle}>
-          ${productVariant.price.amount}
-        </p>
         <p className={productDetailAttributeStyle}>Color: White</p>
         <p className={productDetailAttributeStyle}>Size: M</p>
         <div className={productDetailCTAsStyle}>

@@ -13,17 +13,6 @@ export const recommendationsItemTitleStyle = style({
   display: 'block',
   fontSize: 16,
   fontWeight: 500,
-  marginTop: 8,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap'
-})
-
-export const recommendationsItemPricetyles = style({
-  color: vars.colors.black,
-  display: 'block',
-  fontSize: 16,
-  fontWeight: 500,
   marginBottom: 8,
   marginTop: 8,
   overflow: 'hidden',

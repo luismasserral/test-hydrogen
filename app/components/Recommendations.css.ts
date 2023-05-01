@@ -15,7 +15,7 @@ export const recommendationsTitleStyle = style({
 })
 
 export const recommendationsSwiperWrapperStyle = style({
-  height: 365,
+  height: 334,
   width: '100%'
 })
 

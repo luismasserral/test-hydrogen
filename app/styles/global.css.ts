@@ -12,6 +12,10 @@ globalStyle(':root', {
   }
 })
 
+globalStyle('body', {
+  overflow: 'initial'
+})
+
 globalStyle('.swiper-button-next, .swiper-button-prev', {
   background: vars.colors.white,
   borderRadius: '50%',

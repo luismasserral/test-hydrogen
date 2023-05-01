@@ -39,6 +39,5 @@ const flicker = keyframes({
 export const cartRecommendationsLoadingStyle = style({
   animationDuration: '1.2s',
   animationIterationCount: 'infinite',
-  animationName: flicker,
-  height: 235
+  animationName: flicker
 })

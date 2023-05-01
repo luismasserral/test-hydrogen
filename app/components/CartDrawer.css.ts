@@ -29,6 +29,6 @@ export const CartDrawerProductsStyle = style({
 })
 
 export const CartDrawerRecommendationsStyle = style({
-  height: 310,
+  height: 287,
   width: '100%'
 })

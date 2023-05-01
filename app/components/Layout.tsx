@@ -11,6 +11,7 @@ import {Header} from './Header'
 import {
   layoutContentWrapperStyle,
   layoutFooterWrapperStyle,
+  layoutMainStyle,
   layoutStyle
 } from './Layout.css'
 
@@ -42,7 +43,7 @@ export const Layout: FunctionComponent<PropsWithChildren<object>> = ({
     <div className={layoutStyle}>
       <div className={layoutContentWrapperStyle}>
         <Header openDrawer={openDrawer} />
-        <main role="main" id="mainContent">
+        <main className={layoutMainStyle} id="mainContent" role="main">
           {children}
         </main>
         <Drawer

@@ -13,7 +13,6 @@ import {ProductImage} from './ProductImage'
 import {
   recommendationsItemAddToCartButtonStyles,
   recommendationsItemImageStyle,
-  recommendationsItemPricetyles,
   recommendationsItemTitleStyle
 } from './RecommendationsItem.css'
 
@@ -60,9 +59,6 @@ export const RecommendationsItem: FunctionComponent<
           {productVariant.product.title}
         </p>
       </a>
-      <p className={recommendationsItemPricetyles}>
-        ${productVariant.price.amount}
-      </p>
       <fetcher.Form
         action="/cart"
         method="post"
