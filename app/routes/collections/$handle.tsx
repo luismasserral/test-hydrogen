@@ -1,32 +1,55 @@
+import {
+  SCENARIO_OMITTED,
+  getPersonalizedRecommendations
+} from '@crossingminds/beam-react'
 import {useLoaderData} from '@remix-run/react'
 import type {LoaderArgs} from '@shopify/remix-oxygen'
 import {json} from '@shopify/remix-oxygen'
 
+import {BEAM_REACT_OPTIONS} from '~/beam/config'
 import {Collection} from '~/components/Collection'
 import {COLLECTION_QUERY} from '~/queries/collection'
+import {PRODUCTS_BY_VARIANT_QUERY} from '~/queries/product'
 import {commitSession, getSessionAndSessionId} from '~/sessions'
+import {RECOMMENDATION_SCENARIOS} from '~/utils/recommendations'
+import {SHOPIFY_ENTITY_TYPES, getIdFromShopifyEntityId} from '~/utils/shopify'
 
-export async function action({context, params, request}: LoaderArgs) {
-  const {handle} = params
+export async function action({context, request}: LoaderArgs) {
+  const {sessionId} = await getSessionAndSessionId(request)
   const [formData] = await Promise.all([request.formData()])
-  let pageInfo: any
+  const collectionId = formData.get('collectionId') as string
+  const nextCursor = formData.get('nextCursor') as string
 
-  try {
-    pageInfo = JSON.parse((formData.get('pageInfo') as string) || '') as any
-  } catch {
-    return json([])
-  }
+  const {itemIds: variantIdsForCollection, nextCursor: newNextCursor} =
+    await getPersonalizedRecommendations({
+      ...BEAM_REACT_OPTIONS,
+      sessionId,
+      sessionScenario: RECOMMENDATION_SCENARIOS.PLP_FILTER_BY_COLLECTION,
+      filters: [
+        {
+          itemPropertyName: 'collections',
+          operator: 'eq',
+          value: collectionId
+        }
+      ],
+      cursor: nextCursor,
+      maxResults: 12
+    })
 
-  const {
-    collection: {products}
-  } = await context.storefront.query<Promise<any>>(COLLECTION_QUERY, {
+  const {nodes: productVariantsForCollection} = await context.storefront.query<
+    Promise<any>
+  >(PRODUCTS_BY_VARIANT_QUERY, {
     variables: {
-      ...pageInfo,
-      handle
+      ids: variantIdsForCollection.map(
+        variantId => `gid://shopify/ProductVariant/${variantId}`
+      )
     }
   })
 
-  return json(products)
+  return json({
+    nextCursor: newNextCursor,
+    productVariants: productVariantsForCollection
+  })
 }
 
 export const loader = async ({context, params, request}: LoaderArgs) => {
@@ -46,8 +69,36 @@ export const loader = async ({context, params, request}: LoaderArgs) => {
     throw new Response(undefined, {status: 404})
   }
 
+  const {itemIds: variantIdsForCollection, nextCursor} =
+    await getPersonalizedRecommendations({
+      ...BEAM_REACT_OPTIONS,
+      sessionId,
+      sessionScenario: RECOMMENDATION_SCENARIOS.PLP_FILTER_BY_COLLECTION,
+      filters: [
+        {
+          itemPropertyName: 'collections',
+          operator: 'eq',
+          value: getIdFromShopifyEntityId(
+            SHOPIFY_ENTITY_TYPES.COLLECTION,
+            collection.id
+          )
+        }
+      ],
+      maxResults: 12
+    })
+
+  const {nodes: productVariantsForCollection} = await context.storefront.query<
+    Promise<any>
+  >(PRODUCTS_BY_VARIANT_QUERY, {
+    variables: {
+      ids: variantIdsForCollection.map(
+        variantId => `gid://shopify/ProductVariant/${variantId}`
+      )
+    }
+  })
+
   return json(
-    {collection},
+    {collection, nextCursor, productVariantsForCollection},
     {headers: {'Set-Cookie': await commitSession(session)}}
   )
 }
@@ -55,7 +106,14 @@ export const loader = async ({context, params, request}: LoaderArgs) => {
 export const shouldRevalidate = () => false
 
 export default function CollectionHandle() {
-  const {collection} = useLoaderData<typeof loader>()
+  const {collection, nextCursor, productVariantsForCollection} =
+    useLoaderData<typeof loader>()
 
-  return <Collection collection={collection} />
+  return (
+    <Collection
+      collection={collection}
+      initialNextCursor={nextCursor}
+      initialProductVariants={productVariantsForCollection}
+    />
+  )
 }

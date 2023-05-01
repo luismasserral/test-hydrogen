@@ -8,6 +8,7 @@ import cookies from 'js-cookie'
 import {useEffect, useMemo, useState} from 'react'
 
 import {BEAM_REACT_OPTIONS} from '~/beam/config'
+import {RECOMMENDATION_SCENARIOS} from '~/utils/recommendations'
 import {SHOPIFY_ENTITY_TYPES, getIdFromShopifyEntityId} from '~/utils/shopify'
 
 export function useCartRecommendations() {
@@ -69,8 +70,8 @@ export function useCartRecommendations() {
           ...BEAM_REACT_OPTIONS,
           sessionId,
           contextItems,
-          sessionWithContextScenario: SCENARIO_OMITTED, // TODO: add scenario name
-          sessionScenario: SCENARIO_OMITTED, // TODO: add scenario name
+          sessionWithContextScenario:
+            RECOMMENDATION_SCENARIOS.CART_FREQUENTLY_PURCHASED_TOGETHER,
           maxResults: 8
         })
 

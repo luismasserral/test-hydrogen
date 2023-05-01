@@ -2,8 +2,8 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@crossingminds/beam-react':
-    specifier: ^0.5.0
-    version: 0.5.0(react@18.2.0)
+    specifier: ^0.5.1
+    version: 0.5.1(react@18.2.0)
   '@crossingminds/eslint-config':
     specifier: ^0.1.4
     version: 0.1.4
@@ -1272,12 +1272,12 @@ packages:
     resolution: {integrity: sha512-htzFO1Zc57S8kgdRK9mLcPVTW1BY2ijfH7Dk2CeZmspTWKdKqSo1iwmqrq2WtRjFlo8aRZYgLX0wFrDXF/9DLA==}
     dev: false
 
-  /@crossingminds/beam-react@0.5.0(react@18.2.0):
-    resolution: {integrity: sha512-Fp4yK0oYQHm46v+XvYo7SzjfduRUw9zwWJr/s236BmWF+7aZPG0rdf3SudJy+fhan4MGQgVLpc2Zk+NV8gx9TA==}
+  /@crossingminds/beam-react@0.5.1(react@18.2.0):
+    resolution: {integrity: sha512-pOTJNsylXv+755iiSCVvX3jqorwrtxGGDUIDZkJaTw0K97w8LLEBQR/L0U/UFk7/rVDZEjUxWxoZZ3xCppVH/w==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
-      '@crossingminds/recommendation-client': 0.5.0
+      '@crossingminds/recommendation-client': 0.5.1
       '@crossingminds/utils': 0.2.1
       md5: 2.3.0
       react: 18.2.0
@@ -1287,8 +1287,8 @@ packages:
     resolution: {integrity: sha512-eIyzhYoF8YqBRiz//xUpPBXMG+Z0Ygxc+suwPRSwmdBHtj2PiQDKxe24kNsrdwfXWU4qSAzEzBQI62LYLrerqg==}
     dev: false
 
-  /@crossingminds/recommendation-client@0.5.0:
-    resolution: {integrity: sha512-wGh7no6txB/O298fqhmWe+j7TnGefySeqGQOCIUnHD7CgSo8nAMb0gQZwiM7jb3AyOLqkMXDXpplroLGVw6biw==}
+  /@crossingminds/recommendation-client@0.5.1:
+    resolution: {integrity: sha512-c/mzKYWJmyTWz6TwWUij4Ymwyou3x906yGQ/6qxt00j1DBeOJu5xjWTdqZzoD7kCAEz6nhtL4cSLePOG+oNROQ==}
     dependencies:
       '@crossingminds/utils': 0.2.1
     dev: false

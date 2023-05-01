@@ -1,4 +1,4 @@
-import type {Collection} from '@shopify/hydrogen/storefront-api-types'
+import type {ProductVariant} from '@shopify/hydrogen/storefront-api-types'
 import type {FunctionComponent} from 'react'
 
 import {
@@ -7,20 +7,22 @@ import {
 } from './NewReleasesItem.css'
 
 interface NewReleasesItemProps {
-  collection: Collection
+  productVariant: ProductVariant
 }
 
 export const NewReleasesItem: FunctionComponent<NewReleasesItemProps> = ({
-  collection
+  productVariant
 }) => {
   return (
     <div
       className={newReleasesItemStyle}
       style={{
-        backgroundImage: `url(${collection.image?.url})`
+        backgroundImage: `url(${productVariant.image?.url})`
       }}
     >
-      <p className={newReleasesItemTitleStyle}>{collection.title}</p>
+      <p className={newReleasesItemTitleStyle}>
+        {productVariant.product.title}
+      </p>
     </div>
   )
 }

@@ -15,7 +15,10 @@ import {
   PRODUCT_BY_VARIANT_QUERY
 } from '~/queries/product'
 import {commitSession, getSessionAndSessionId} from '~/sessions'
-import {removeDuplicatedIds} from '~/utils/recommendations'
+import {
+  RECOMMENDATION_SCENARIOS,
+  removeDuplicatedIds
+} from '~/utils/recommendations'
 import {
   SHOPIFY_ENTITY_TYPES,
   getIdFromShopifyEntityId,
@@ -48,15 +51,18 @@ export const loader = async ({context, params, request}: LoaderArgs) => {
     throw new Response(undefined, {status: 404})
   }
 
+  const productVariantId = getIdFromShopifyEntityId(
+    SHOPIFY_ENTITY_TYPES.PRODUCT_VARIANT,
+    productVariant.id
+  )
+
   const {itemIds: variantIdsForPurchasedOrViewed} =
     await getItemBasedRecommendations({
       ...BEAM_REACT_OPTIONS,
       sessionId,
-      itemId: getIdFromShopifyEntityId(
-        SHOPIFY_ENTITY_TYPES.PRODUCT_VARIANT,
-        productVariant.id
-      ),
+      itemId: productVariantId,
       options: {
+        scenario: RECOMMENDATION_SCENARIOS.PDP_CUSTOMERS_ALSO_PURCHASES,
         maxResults: 8
       }
     })
@@ -75,7 +81,9 @@ export const loader = async ({context, params, request}: LoaderArgs) => {
       ...BEAM_REACT_OPTIONS,
       sessionId,
       maxResults: 16,
-      sessionScenario: SCENARIO_OMITTED // TODO: add scenario
+      contextItems: [{itemId: productVariantId}],
+      sessionWithContextScenario:
+        RECOMMENDATION_SCENARIOS.PDP_RECOMMENDATIONS_FOR_YOU
     })
 
   const {nodes: productVariantsForRecommendations} =

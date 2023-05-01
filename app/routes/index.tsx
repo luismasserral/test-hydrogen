@@ -1,5 +1,4 @@
 import {
-  SCENARIO_OMITTED,
   getPersonalizedRecommendations,
   getPropertyRecommendations
 } from '@crossingminds/beam-react'
@@ -7,11 +6,7 @@ import {useLoaderData} from '@remix-run/react'
 import type {LoaderArgs, MetaFunction} from '@shopify/remix-oxygen'
 import {json} from '@shopify/remix-oxygen'
 
-import {
-  BEAM_REACT_OPTIONS,
-  getRandomCollectionIds,
-  getRandomProductVariantIds
-} from '~/beam/config'
+import {BEAM_REACT_OPTIONS} from '~/beam/config'
 import {Collections} from '~/components/Collections'
 import {HeroBanner} from '~/components/HeroBanner'
 import {NewReleases} from '~/components/NewReleases'
@@ -20,6 +15,7 @@ import {Recommendations} from '~/components/Recommendations'
 import {COLLECTIONS_QUERY} from '~/queries/collection'
 import {PRODUCTS_BY_VARIANT_QUERY} from '~/queries/product'
 import {commitSession, getSessionAndSessionId} from '~/sessions'
+import {RECOMMENDATION_SCENARIOS} from '~/utils/recommendations'
 
 import HeroImage1 from '../../public/hero_banner_1.jpg'
 import HeroImage2 from '../../public/hero_banner_2.jpg'
@@ -37,35 +33,33 @@ export const meta: MetaFunction = () => {
 export const loader = async ({context, request}: LoaderArgs) => {
   const {session, sessionId} = await getSessionAndSessionId(request)
 
-  // TODO: when "collections" property is available, use the following code
-  // const {itemProperties: collectionIdsForCollections} =
-  //   await getPropertyRecommendations({
-  //     ...BEAM_REACT_OPTIONS,
-  //     sessionId,
-  //     sessionPropertiesScenario: SCENARIO_OMITTED, // TODO: add scenario
-  //     propertyName: 'collections',
-  //     maxResults: 6
-  //   })
-
-  const collectionIdsForCollections = getRandomCollectionIds(4)
+  const {itemProperties: collectionIdsForCollections} =
+    await getPropertyRecommendations({
+      ...BEAM_REACT_OPTIONS,
+      sessionId,
+      sessionPropertiesScenario:
+        RECOMMENDATION_SCENARIOS.HOME_COLLECTIONS_FOR_YOU,
+      propertyName: 'collections',
+      maxResults: 6
+    })
 
   const {nodes: collectionsForCollections} = await context.storefront.query<
     Promise<any>
   >(COLLECTIONS_QUERY, {
     variables: {
-      ids: collectionIdsForCollections
+      ids: collectionIdsForCollections.map(
+        collectionId => `gid://shopify/Collection/${collectionId}`
+      )
     }
   })
 
-  // TODO: when personalized recommendations are working, use the following code
-  // const {itemIds: variantIdsForRecommendations} =
-  //   await getPersonalizedRecommendations({
-  //     ...BEAM_REACT_OPTIONS,
-  //     sessionId,
-  //     sessionScenario: SCENARIO_OMITTED,
-  //     maxResults: 8
-  //   })
-  const variantIdsForRecommendations = getRandomProductVariantIds(8)
+  const {itemIds: variantIdsForRecommendations} =
+    await getPersonalizedRecommendations({
+      ...BEAM_REACT_OPTIONS,
+      sessionId,
+      sessionScenario: RECOMMENDATION_SCENARIOS.HOME_RECOMMENDATIONS_FOR_YOU,
+      maxResults: 8
+    })
 
   const {nodes: productVariantsForRecommendations} =
     await context.storefront.query<Promise<any>>(PRODUCTS_BY_VARIANT_QUERY, {
@@ -76,24 +70,31 @@ export const loader = async ({context, request}: LoaderArgs) => {
       }
     })
 
-  const collectionIdsForNewReleases = getRandomCollectionIds(3)
-  const {nodes: collectionsForNewReleases} = await context.storefront.query<
+  const {itemIds: variantIdsForNewReleases} =
+    await getPersonalizedRecommendations({
+      ...BEAM_REACT_OPTIONS,
+      sessionId,
+      sessionScenario: RECOMMENDATION_SCENARIOS.HOME_NEW_RELEASES_FOR_YOU,
+      maxResults: 3
+    })
+
+  const {nodes: productVariantsForNewReleases} = await context.storefront.query<
     Promise<any>
-  >(COLLECTIONS_QUERY, {
+  >(PRODUCTS_BY_VARIANT_QUERY, {
     variables: {
-      ids: collectionIdsForNewReleases
+      ids: variantIdsForNewReleases.map(
+        variantId => `gid://shopify/ProductVariant/${variantId}`
+      )
     }
   })
 
-  // TODO: when personalized recommendations are working, use the following code
-  // const {itemIds: variantIdsForOurFavorites} =
-  //   await getPersonalizedRecommendations({
-  //     ...BEAM_REACT_OPTIONS,
-  //     sessionId,
-  //     sessionScenario: SCENARIO_OMITTED,
-  //     maxResults: 6
-  //   })
-  const variantIdsForOurFavorites = getRandomProductVariantIds(6)
+  const {itemIds: variantIdsForOurFavorites} =
+    await getPersonalizedRecommendations({
+      ...BEAM_REACT_OPTIONS,
+      sessionId,
+      sessionScenario: RECOMMENDATION_SCENARIOS.HOME_OUR_FAVORITES,
+      maxResults: 6
+    })
 
   const {nodes: productVariantsForOurFavorites} =
     await context.storefront.query<Promise<any>>(PRODUCTS_BY_VARIANT_QUERY, {
@@ -106,10 +107,11 @@ export const loader = async ({context, request}: LoaderArgs) => {
 
   return json(
     {
-      backgroundImageUrl:
-        HERO_IMAGES[Math.floor(Math.random() * HERO_IMAGES.length)],
+      backgroundImageUrl: HERO_IMAGES[
+        Math.floor(Math.random() * HERO_IMAGES.length)
+      ] as string,
       collectionsForCollections,
-      collectionsForNewReleases,
+      productVariantsForNewReleases,
       productVariantsForOurFavorites,
       productVariantsForRecommendations
     },
@@ -127,7 +129,7 @@ export default function Index() {
   const {
     backgroundImageUrl,
     collectionsForCollections,
-    collectionsForNewReleases,
+    productVariantsForNewReleases,
     productVariantsForOurFavorites,
     productVariantsForRecommendations
   } = useLoaderData<typeof loader>()
@@ -140,7 +142,7 @@ export default function Index() {
         productVariants={productVariantsForRecommendations}
         title="Recommendations for you"
       />
-      <NewReleases collections={collectionsForNewReleases} />
+      <NewReleases productVariants={productVariantsForNewReleases} />
       <OurFavorites productVariants={productVariantsForOurFavorites} />
     </div>
   )

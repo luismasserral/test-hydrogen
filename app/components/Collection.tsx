@@ -1,7 +1,12 @@
 import {useFetcher} from '@remix-run/react'
-import type {Collection as CollectionType} from '@shopify/hydrogen/storefront-api-types'
+import type {
+  Collection as CollectionType,
+  ProductVariant
+} from '@shopify/hydrogen/storefront-api-types'
 import type {FunctionComponent} from 'react'
 import {useEffect, useState} from 'react'
+
+import {SHOPIFY_ENTITY_TYPES, getIdFromShopifyEntityId} from '~/utils/shopify'
 
 import {Button} from './Button'
 import {
@@ -16,70 +21,57 @@ import {CollectionProduct} from './CollectionProduct'
 
 interface CollectionProps {
   collection: CollectionType
+  initialNextCursor: string | undefined
+  initialProductVariants: ProductVariant[]
 }
 
 export const Collection: FunctionComponent<CollectionProps> = ({
-  collection
+  collection,
+  initialNextCursor,
+  initialProductVariants
 }) => {
   const fetcher = useFetcher()
-  const [products, setProducts] = useState(collection.products)
-  const {
-    pageInfo: {hasNextPage, hasPreviousPage, endCursor, startCursor}
-  } = products
+  const [nextCursor, setNextCursor] = useState(initialNextCursor)
+  const [productVariants, setProductVariants] = useState(initialProductVariants)
 
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher.data) {
-      setProducts(fetcher.data)
+      setNextCursor(fetcher.data.nextCursor)
+      setProductVariants(fetcher.data.productVariants)
     }
   }, [fetcher])
 
   const loadNextPage = () => {
-    fetcher.submit(
-      {
-        pageInfo: JSON.stringify({
-          first: 12,
-          startCursor: endCursor
-        })
-      },
-      {method: 'post', action: `/collections/${collection.handle}`}
-    )
-  }
-
-  const loadPreviousPage = () => {
-    fetcher.submit(
-      {
-        pageInfo: JSON.stringify({
-          last: 12,
-          endCursor: startCursor
-        })
-      },
-      {method: 'post', action: `/collections/${collection.handle}`}
-    )
+    if (nextCursor) {
+      fetcher.submit(
+        {
+          collectionId: getIdFromShopifyEntityId(
+            SHOPIFY_ENTITY_TYPES.COLLECTION,
+            collection.id
+          ),
+          nextCursor
+        },
+        {method: 'post', action: `/collections/${collection.handle}`}
+      )
+    }
   }
 
   return (
     <div className={collectionStyle}>
-      <h1 className={collectionTitleStyle}>Collection</h1>
+      <h1 className={collectionTitleStyle}>{collection.title}</h1>
       <div className={collectionGridStyle}>
-        {products.nodes.map(product => (
-          <CollectionProduct key={product.id} product={product} />
+        {productVariants.map(productVariant => (
+          <CollectionProduct
+            key={productVariant.id}
+            productVariant={productVariant}
+          />
         ))}
       </div>
       <ul className={collectionPaginationStyle}>
         <li className={collectionPaginationItemStyle}>
           <Button
             className={collectionPaginationButtonStyle}
-            disabled={!hasPreviousPage}
-            loading={fetcher.state === 'loading'}
-            onClick={loadPreviousPage}
-            title="< Previous"
-            variant="pagination"
-          />
-        </li>
-        <li className={collectionPaginationItemStyle}>
-          <Button
-            className={collectionPaginationButtonStyle}
-            disabled={!hasNextPage}
+            disabled={!nextCursor}
             loading={fetcher.state === 'loading'}
             onClick={loadNextPage}
             title="Next >"

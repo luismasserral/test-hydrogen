@@ -1,8 +1,5 @@
 import {useRecordItemInteractions} from '@crossingminds/beam-react'
-import type {
-  Product,
-  ProductVariant
-} from '@shopify/hydrogen/storefront-api-types'
+import type {ProductVariant} from '@shopify/hydrogen/storefront-api-types'
 import type {FunctionComponent} from 'react'
 import {useMemo} from 'react'
 
@@ -19,20 +16,16 @@ import {
 import {ProductImage} from './ProductImage'
 
 interface CollectionProductProps {
-  product: Product
+  productVariant: ProductVariant
 }
 
 export const CollectionProduct: FunctionComponent<CollectionProductProps> = ({
-  product
+  productVariant
 }) => {
   const {recordItemClickInteraction} = useRecordItemInteractions({
     ...BEAM_REACT_OPTIONS,
     sessionId
   })
-
-  const productVariant = useMemo(() => {
-    return product.variants.nodes[0] as ProductVariant
-  }, [product])
 
   const productVariantId = useMemo(
     () =>
