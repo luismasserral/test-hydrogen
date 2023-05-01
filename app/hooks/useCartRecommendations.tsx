@@ -1,11 +1,11 @@
 import {getPersonalizedRecommendations} from '@crossingminds/beam-react'
 import {useFetcher} from '@remix-run/react'
 import type {Cart} from '@shopify/hydrogen/storefront-api-types'
-import cookies from 'js-cookie'
-import {useEffect, useMemo, useState} from 'react'
+import {useEffect, useState} from 'react'
 
 import {BEAM_REACT_OPTIONS} from '~/beam/config'
 import {RECOMMENDATION_SCENARIOS} from '~/utils/recommendations'
+import {sessionId} from '~/utils/sessionId.client'
 import {SHOPIFY_ENTITY_TYPES, getIdFromShopifyEntityId} from '~/utils/shopify'
 
 export function useCartRecommendations() {
@@ -24,21 +24,6 @@ export function useCartRecommendations() {
       setCartRecommendationsError(false)
     }
   }, [fetcher])
-
-  const sessionId = useMemo(() => {
-    const base64EncodedObject = cookies.get('__session')
-
-    if (base64EncodedObject && 'atob' in globalThis) {
-      try {
-        const decodedObject = atob(base64EncodedObject)
-        const {id} = JSON.parse(decodedObject)
-
-        return id
-      } catch {
-        return undefined
-      }
-    }
-  }, [])
 
   const cartHasChanged = (newCart: Cart) => {
     return (

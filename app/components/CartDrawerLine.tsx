@@ -79,7 +79,7 @@ export const CartDrawerLine: FunctionComponent<HeaderProps> = ({
           <p>${cartLineEdge.node.merchandise.price.amount}</p>
         </div>
         <div className={CartDrawerLineActionsWrapperStyle}>
-          <p>Qty: {cartLineEdge.node.quantity}</p>
+          <p>Quantity: {cartLineEdge.node.quantity}</p>
           <fetcher.Form action="/cart" method="post">
             <input type="hidden" name="cartAction" value="REMOVE_FROM_CART" />
             <input

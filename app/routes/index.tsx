@@ -26,13 +26,6 @@ import HeroImage3 from '../../public/hero_banner_3.jpg'
 
 const HERO_IMAGES = [HeroImage1, HeroImage2, HeroImage3]
 
-export const meta: MetaFunction = () => {
-  return {
-    title: 'Hydrogen',
-    description: 'A custom storefront powered by Hydrogen'
-  }
-}
-
 export const loader = async ({context, request}: LoaderArgs) => {
   const {session, sessionId} = await getSessionAndSessionId(request)
 
@@ -131,6 +124,13 @@ export const loader = async ({context, request}: LoaderArgs) => {
 }
 
 export const shouldRevalidate = () => false
+
+export const meta: MetaFunction = () => {
+  return {
+    title: 'Carrera - Crossing Minds Beam Demo Store',
+    description: 'A Crossing Minds demo store'
+  }
+}
 
 export default function Index() {
   const {

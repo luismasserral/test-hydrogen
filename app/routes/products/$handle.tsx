@@ -3,7 +3,7 @@ import {
   getPersonalizedRecommendations
 } from '@crossingminds/beam-react'
 import {useLoaderData} from '@remix-run/react'
-import type {LoaderArgs} from '@shopify/remix-oxygen'
+import type {LoaderArgs, MetaFunction} from '@shopify/remix-oxygen'
 import {json} from '@shopify/remix-oxygen'
 
 import {BEAM_REACT_OPTIONS} from '~/beam/config'
@@ -112,6 +112,13 @@ export const loader = async ({context, params, request}: LoaderArgs) => {
 }
 
 export const shouldRevalidate = () => false
+
+export const meta: MetaFunction<typeof loader> = ({data: {productVariant}}) => {
+  return {
+    title: `${productVariant.product.title} - Crossing Minds Beam Demo Store`,
+    description: productVariant.product.descriptionHtml
+  }
+}
 
 export default function ProductHandle() {
   const {
