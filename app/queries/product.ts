@@ -40,6 +40,7 @@ query variantProduct($id: ID!) {
         id
         descriptionHtml
         handle
+        tags
         title
       }
       title

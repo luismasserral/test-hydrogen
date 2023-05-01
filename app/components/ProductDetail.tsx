@@ -16,6 +16,9 @@ import {
   productDetailImageStyle,
   productDetailPriceStyle,
   productDetailStyle,
+  productDetailTagContainerStyle,
+  productDetailTagListItemStyle,
+  productDetailTagListStyle,
   productDetailTitleStyle,
   productDetailWrapperStyle
 } from './ProductDetail.css'
@@ -69,9 +72,6 @@ export const ProductDetail: FunctionComponent<ButtonProps> = ({
         </p>
         <p className={productDetailAttributeStyle}>Color: White</p>
         <p className={productDetailAttributeStyle}>Size: M</p>
-        <div>
-          <p className={productDetailAttributeStyle}>Quantity</p>
-        </div>
         <div className={productDetailCTAsStyle}>
           <fetcher.Form
             action="/cart"
@@ -97,6 +97,17 @@ export const ProductDetail: FunctionComponent<ButtonProps> = ({
             __html: productVariant.product.descriptionHtml
           }}
         />
+        {productVariant.product.tags?.length ? (
+          <div className={productDetailTagContainerStyle}>
+            <ul className={productDetailTagListStyle}>
+              {productVariant.product.tags.map(tag => (
+                <li className={productDetailTagListItemStyle} key={tag}>
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : undefined}
       </div>
     </div>
   )

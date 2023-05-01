@@ -73,3 +73,23 @@ export const productDetailDescriptionStyle = style({
   fontWeight: 400,
   lineHeight: '20px'
 })
+
+export const productDetailTagContainerStyle = style({
+  display: 'flex',
+  gap: 10
+})
+
+export const productDetailTagListStyle = style({
+  listStyle: 'none'
+})
+
+export const productDetailTagListItemStyle = style({
+  border: '1px solid',
+  borderRadius: 4,
+  display: 'inline-flex',
+  fontSize: 13,
+  lineHeight: '14px',
+  marginBottom: 4,
+  marginRight: 10,
+  padding: '3px 7px'
+})
