@@ -6,7 +6,10 @@ import {useLoaderData} from '@remix-run/react'
 import type {LoaderArgs, MetaFunction} from '@shopify/remix-oxygen'
 import {json} from '@shopify/remix-oxygen'
 
-import {BEAM_REACT_OPTIONS} from '~/beam/config'
+import {
+  BEAM_DISABLED_PRODUCT_VARIANT_IDS_RECOMMENDATIONS,
+  BEAM_REACT_OPTIONS
+} from '~/beam/config'
 import {ProductDetail} from '~/components/ProductDetail'
 import {Recommendations} from '~/components/Recommendations'
 import {
@@ -26,6 +29,8 @@ import {
 
 export const loader = async ({context, params, request}: LoaderArgs) => {
   const {session, sessionId} = await getSessionAndSessionId(request)
+  const cookie = request.headers.get('Cookie')
+  const beamEnabled = (cookie || '').indexOf('__beamEnabled=1') >= 0
   const {handle} = params
   const url = new URL(request.url)
   const variant = url.searchParams.get('variant')
@@ -65,13 +70,16 @@ export const loader = async ({context, params, request}: LoaderArgs) => {
         maxResults: 8
       }
     })
+  const staticVariantIdsForPurchasedOrViewed =
+    BEAM_DISABLED_PRODUCT_VARIANT_IDS_RECOMMENDATIONS.slice(0, 8)
 
   const {nodes: productVariantsForPurchasedOrViewed} =
     await context.storefront.query<Promise<any>>(PRODUCTS_BY_VARIANT_QUERY, {
       variables: {
-        ids: variantIdsForPurchasedOrViewed.map(
-          variantId => `gid://shopify/ProductVariant/${variantId}`
-        )
+        ids: (beamEnabled
+          ? variantIdsForPurchasedOrViewed
+          : staticVariantIdsForPurchasedOrViewed
+        ).map(variantId => `gid://shopify/ProductVariant/${variantId}`)
       }
     })
 
@@ -84,14 +92,19 @@ export const loader = async ({context, params, request}: LoaderArgs) => {
       sessionWithContextScenario:
         RECOMMENDATION_SCENARIOS.PDP_RECOMMENDATIONS_FOR_YOU
     })
+  const staticVariantIdsForRecommendations =
+    BEAM_DISABLED_PRODUCT_VARIANT_IDS_RECOMMENDATIONS.slice(8, 16)
 
   const {nodes: productVariantsForRecommendations} =
     await context.storefront.query<Promise<any>>(PRODUCTS_BY_VARIANT_QUERY, {
       variables: {
-        ids: removeDuplicatedIdsAndGetFirstNth(
-          variantIdsForRecommendations,
-          variantIdsForPurchasedOrViewed,
-          8
+        ids: (beamEnabled
+          ? removeDuplicatedIdsAndGetFirstNth(
+              variantIdsForRecommendations,
+              variantIdsForPurchasedOrViewed,
+              8
+            )
+          : staticVariantIdsForRecommendations
         ).map(variantId => `gid://shopify/ProductVariant/${variantId}`)
       }
     })

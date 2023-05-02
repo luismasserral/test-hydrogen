@@ -6,7 +6,7 @@ export const productDetailStyle = style({
   display: 'flex',
   flexDirection: 'column',
   gap: 8,
-  marginTop: 32,
+  marginTop: 100,
   '@media': {
     '(min-width: 1024px)': {
       flexDirection: 'row',

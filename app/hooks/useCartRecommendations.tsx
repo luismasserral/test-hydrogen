@@ -1,6 +1,7 @@
 import {getPersonalizedRecommendations} from '@crossingminds/beam-react'
 import {useFetcher} from '@remix-run/react'
 import type {Cart} from '@shopify/hydrogen/storefront-api-types'
+import cookies from 'js-cookie'
 import {useEffect, useState} from 'react'
 
 import {BEAM_REACT_OPTIONS} from '~/beam/config'
@@ -26,6 +27,10 @@ export function useCartRecommendations() {
   }, [fetcher])
 
   const removeRepeatedCartRecommendations = (recommendations: any[]) => {
+    if (cookies.get('__beamEnabled') !== '1') {
+      return recommendations
+    }
+
     const cartIds = previousCart?.lines.edges.map(
       cartLineEdge => cartLineEdge.node.merchandise.id
     )

@@ -55,10 +55,13 @@ export const meta: MetaFunction = () => ({
   viewport: 'width=device-width,initial-scale=1'
 })
 
-export async function loader({context}: LoaderArgs) {
+export async function loader({context, request}: LoaderArgs) {
   const cartId = await context.session.get('cartId')
+  const cookie = request.headers.get('Cookie')
+  const beamEnabled = (cookie || '').indexOf('__beamEnabled=1') >= 0
 
   return defer({
+    beamEnabled,
     cart: cartId ? getCart(context, cartId) : undefined,
     layout: await context.storefront.query<{shop: Shop}>(LAYOUT_QUERY)
   })

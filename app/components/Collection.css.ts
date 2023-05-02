@@ -3,7 +3,7 @@ import {style} from '@vanilla-extract/css'
 import {vars} from '~/styles/theme.css'
 
 export const collectionStyle = style({
-  marginTop: 32
+  marginTop: 84
 })
 
 export const collectionTitleStyle = style({

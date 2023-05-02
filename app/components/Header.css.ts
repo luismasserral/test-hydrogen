@@ -22,6 +22,7 @@ export const headerInnerStyle = style({
   justifyContent: 'space-between',
   margin: '0 auto',
   padding: '0 32px',
+  position: 'relative',
   width: '100%',
   '@media': {
     '(min-width: 1024px)': {
@@ -35,4 +36,14 @@ export const headerTitleStyle = style({
   color: vars.colors.black,
   fontFamily: vars.fonts.nanum,
   fontSize: 24
+})
+
+export const headerToggleStyle = style({
+  left: 120,
+  position: 'absolute',
+  '@media': {
+    '(min-width: 1024px)': {
+      left: 90
+    }
+  }
 })

@@ -1,8 +1,14 @@
 import {useMatches} from '@remix-run/react'
 import type {FunctionComponent} from 'react'
 
-import {headerInnerStyle, headerStyle, headerTitleStyle} from './Header.css'
+import {
+  headerInnerStyle,
+  headerStyle,
+  headerTitleStyle,
+  headerToggleStyle
+} from './Header.css'
 import {HeaderCart} from './HeaderCart'
+import {Toggle} from './Toggle'
 
 interface HeaderProps {
   openDrawer: () => void
@@ -18,6 +24,7 @@ export const Header: FunctionComponent<HeaderProps> = ({openDrawer}) => {
         <a href="/">
           <h1 className={headerTitleStyle}>Carrera</h1>
         </a>
+        <Toggle className={headerToggleStyle} />
         <HeaderCart cart={cart} openDrawer={openDrawer} />
       </div>
     </header>

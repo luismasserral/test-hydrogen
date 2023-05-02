@@ -6,7 +6,11 @@ import {useLoaderData} from '@remix-run/react'
 import type {LoaderArgs, MetaFunction} from '@shopify/remix-oxygen'
 import {json} from '@shopify/remix-oxygen'
 
-import {BEAM_REACT_OPTIONS} from '~/beam/config'
+import {
+  BEAM_DISABLED_COLLECTION_IDS_RECOMMENDATIONS,
+  BEAM_DISABLED_PRODUCT_VARIANT_IDS_RECOMMENDATIONS,
+  BEAM_REACT_OPTIONS
+} from '~/beam/config'
 import {Collections} from '~/components/Collections'
 import {HeroBanner} from '~/components/HeroBanner'
 import {NewReleases} from '~/components/NewReleases'
@@ -28,6 +32,8 @@ const HERO_IMAGES = [HeroImage1, HeroImage2, HeroImage3]
 
 export const loader = async ({context, request}: LoaderArgs) => {
   const {session, sessionId} = await getSessionAndSessionId(request)
+  const cookie = request.headers.get('Cookie')
+  const beamEnabled = (cookie || '').indexOf('__beamEnabled=1') >= 0
 
   const {itemProperties: collectionIdsForCollections} =
     await getPropertyRecommendations({
@@ -38,14 +44,17 @@ export const loader = async ({context, request}: LoaderArgs) => {
       propertyName: 'collections',
       maxResults: 6
     })
+  const staticCollectionIdsForCollections =
+    BEAM_DISABLED_COLLECTION_IDS_RECOMMENDATIONS
 
   const {nodes: collectionsForCollections} = await context.storefront.query<
     Promise<any>
   >(COLLECTIONS_QUERY, {
     variables: {
-      ids: collectionIdsForCollections.map(
-        collectionId => `gid://shopify/Collection/${collectionId}`
-      )
+      ids: (beamEnabled
+        ? collectionIdsForCollections
+        : staticCollectionIdsForCollections
+      ).map(collectionId => `gid://shopify/Collection/${collectionId}`)
     }
   })
 
@@ -56,13 +65,16 @@ export const loader = async ({context, request}: LoaderArgs) => {
       sessionScenario: RECOMMENDATION_SCENARIOS.HOME_RECOMMENDATIONS_FOR_YOU,
       maxResults: 8
     })
+  const staticVariantIdsForRecommendations =
+    BEAM_DISABLED_PRODUCT_VARIANT_IDS_RECOMMENDATIONS.slice(24, 32)
 
   const {nodes: productVariantsForRecommendations} =
     await context.storefront.query<Promise<any>>(PRODUCTS_BY_VARIANT_QUERY, {
       variables: {
-        ids: variantIdsForRecommendations.map(
-          variantId => `gid://shopify/ProductVariant/${variantId}`
-        )
+        ids: (beamEnabled
+          ? variantIdsForRecommendations
+          : staticVariantIdsForRecommendations
+        ).map(variantId => `gid://shopify/ProductVariant/${variantId}`)
       }
     })
 
@@ -73,15 +85,20 @@ export const loader = async ({context, request}: LoaderArgs) => {
       sessionScenario: RECOMMENDATION_SCENARIOS.HOME_NEW_RELEASES_FOR_YOU,
       maxResults: 11
     })
+  const staticVariantIdsForNewReleases =
+    BEAM_DISABLED_PRODUCT_VARIANT_IDS_RECOMMENDATIONS.slice(32, 35)
 
   const {nodes: productVariantsForNewReleases} = await context.storefront.query<
     Promise<any>
   >(PRODUCTS_BY_VARIANT_QUERY, {
     variables: {
-      ids: removeDuplicatedIdsAndGetFirstNth(
-        variantIdsForNewReleases,
-        variantIdsForRecommendations,
-        3
+      ids: (beamEnabled
+        ? removeDuplicatedIdsAndGetFirstNth(
+            variantIdsForNewReleases,
+            variantIdsForRecommendations,
+            3
+          )
+        : staticVariantIdsForNewReleases
       ).map(variantId => `gid://shopify/ProductVariant/${variantId}`)
     }
   })
@@ -93,14 +110,19 @@ export const loader = async ({context, request}: LoaderArgs) => {
       sessionScenario: RECOMMENDATION_SCENARIOS.HOME_OUR_FAVORITES,
       maxResults: 17
     })
+  const staticVariantIdsForOurFavorites =
+    BEAM_DISABLED_PRODUCT_VARIANT_IDS_RECOMMENDATIONS.slice(35, 41)
 
   const {nodes: productVariantsForOurFavorites} =
     await context.storefront.query<Promise<any>>(PRODUCTS_BY_VARIANT_QUERY, {
       variables: {
-        ids: removeDuplicatedIdsAndGetFirstNth(
-          variantIdsForOurFavorites,
-          [...variantIdsForNewReleases, ...variantIdsForNewReleases],
-          6
+        ids: (beamEnabled
+          ? removeDuplicatedIdsAndGetFirstNth(
+              variantIdsForOurFavorites,
+              [...variantIdsForNewReleases, ...variantIdsForNewReleases],
+              6
+            )
+          : staticVariantIdsForOurFavorites
         ).map(variantId => `gid://shopify/ProductVariant/${variantId}`)
       }
     })

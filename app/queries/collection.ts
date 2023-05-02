@@ -14,12 +14,12 @@ query collections($ids: [ID!]!) {
 `
 
 export const COLLECTION_QUERY = `#graphql
-query collection($handle: String!, $first: Int, $last: Int, $endCursor: String, $startCursor: String) {
+query collection($handle: String!, $first: Int, $startCursor: String) {
   collection(handle: $handle) {
     id
     title
     handle
-    products(first: $first, last: $last, after: $startCursor, before: $endCursor) {
+    products(first: $first, after: $startCursor) {
       nodes {
         id
         descriptionHtml
@@ -47,9 +47,6 @@ query collection($handle: String!, $first: Int, $last: Int, $endCursor: String, 
         title
       }
       pageInfo {
-        hasNextPage
-        hasPreviousPage
-        endCursor
         startCursor
       }
     }
