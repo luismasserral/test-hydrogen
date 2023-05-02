@@ -103,11 +103,11 @@ export const CART_QUERY = `#graphql
   }
 
   fragment ImageFragment on Image {
+    altText
+    height
     id
     url
-    altText
     width
-    height
   }
 `
 
